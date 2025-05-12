@@ -4,7 +4,12 @@ import org.example.editions.*;
 import org.example.workers.*;
 
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileWriter;
 import java.util.*;
+import java.util.List;
 
 public class Main {
 
@@ -28,6 +33,7 @@ public class Main {
             System.out.println("2. Select printing shop");
             System.out.println("3. Show me selected shop now");
             System.out.println("4. We have work here.");
+            System.out.println("5. Export report");
             System.out.println("0. Exit");
             System.out.print("Choice: ");
             int choice = scanner.nextInt();
@@ -218,7 +224,30 @@ public class Main {
                                         int editionIndex = scanner.nextInt() - 1;
                                         houses.get(selectedShopIndex).setSelectedEdition(editionIndex);
                                         break;
-
+                                    case 11:
+                                        //FileWriter writer = new FileWriter("report.txt");;
+                                        houses.get(selectedShopIndex).saveReportToFile("report.txt");
+                                        //if (Desktop.isDesktopSupported()) {
+                                        //    Desktop.getDesktop().open(new File("report.txt"));
+                                        //} else {
+                                        //    System.out.println("Desktop suck at this system.");
+                                        //}
+                                        //writer.close();
+                                        break;
+                                    case 12:
+                                        houses.get(selectedShopIndex).loadReportFromFile("report.txt");
+                                        if (Desktop.isDesktopSupported()) {
+                                            Desktop.getDesktop().open(new File("report.txt"));
+                                        } else {
+                                            System.out.println("Desktop suck at this system.");
+                                        }
+                                        break;
+                                    case 13:
+                                        houses.get(selectedShopIndex).serializeEmployees("employees.ser");
+                                        break;
+                                    case 14:
+                                        houses.get(selectedShopIndex).deserializeEmployees("employees.ser");
+                                        break;
                                     case 0:
                                         return;
                                     case 10:
@@ -234,6 +263,8 @@ public class Main {
                         break;
                     default:
                         System.out.println("Miss you sir, my beloved user!");
+                        new File("report.txt").delete();
+                        houses.clear();
                         break;
                 }
             } catch (Exception e) {

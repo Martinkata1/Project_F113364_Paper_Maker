@@ -4,6 +4,7 @@ import org.example.editions.Edition;
 import org.example.editions.Paper;
 import org.example.workers.Employee;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,6 +133,48 @@ public class PrintingShop {
             System.out.println("Invalid index for edition.");
         }
     }
+    public void saveReportToFile(String filePath) {
+        try (PrintWriter out = new PrintWriter(new FileWriter(filePath))) {
+            out.println("=== Report for Printing Shop ===");
+            out.println("Name: " + name);
+            out.printf("Revenue: %.2f\n", revenue);
+            out.printf("Expenses: %.2f\n", calculateExpenses());
+            out.println("Printed editions:");
+            for (Edition e : editions) {
+                out.printf("- %s (%d copies)\n", e.getTitle(), e.getCopies());
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving report: " + e.getMessage());
+        }
+    }
+    public void loadReportFromFile(String filePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error loading report: " + e.getMessage());
+        }
+    }
+    public void serializeEmployees(String filePath) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
+            out.writeObject(employees);
+            System.out.println("Employees serialized successfully.");
+        } catch (IOException e) {
+            System.out.println("Serialization error: " + e.getMessage());
+        }
+    }
+    public void deserializeEmployees(String filePath) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
+            employees = (List<Employee>) in.readObject();
+            System.out.println("Employees deserialized successfully.");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Deserialization error: " + e.getMessage());
+        }
+    }
+
+
 
     public Edition getSelectedEdition() {
         return selectedEdition;

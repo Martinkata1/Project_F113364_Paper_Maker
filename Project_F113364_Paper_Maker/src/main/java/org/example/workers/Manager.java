@@ -3,7 +3,10 @@ package org.example.workers;
 
 import org.example.PrintingShop;
 
-public class Manager extends Employee {
+import java.io.Serializable;
+
+public class Manager extends Employee implements Serializable {
+    private static final long serialVersionUID = 1L;
     private double bonusPercent;
     private double revenueThreshold;
 
