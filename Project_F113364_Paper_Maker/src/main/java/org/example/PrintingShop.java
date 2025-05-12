@@ -15,6 +15,9 @@ public class PrintingShop {
 
     private double discountPercent;
 
+    private Edition selectedEdition;
+
+
     private List<Employee> employees = new ArrayList<>();
 
     private List<PrintingMachine> machines = new ArrayList<>();
@@ -50,7 +53,7 @@ public class PrintingShop {
         return editions.isEmpty() ? null : editions.get(editions.size() - 1);
     }
 
-    public void printEdition(Edition edition, Paper paper, boolean color) throws Exception {
+    /*public void printEdition(Edition edition, Paper paper, boolean color) throws Exception {
         //TODO
         if (!machines.get(0).supportsColor() && color) {
             throw new Exception("Machine does not support color printing.");
@@ -67,6 +70,75 @@ public class PrintingShop {
         }
 
         revenue += edition.getCopies() * price;
+    }*/
+    public void printEdition(Edition edition, Paper paper, boolean color) throws Exception {
+        //TODO FIX EDITION
+        Edition edition1 = getSelectedEdition();
+        if (edition == null) {
+            System.out.println("No editions available.");
+            return;
+        }
+        boolean needsColor = true;
+
+        List<PrintingMachine> suitableMachines = new ArrayList<>();
+        for (PrintingMachine machine : machines) {
+            if (needsColor && !machine.supportsColor()) {
+                continue;
+            }
+            if (machine.getCurrentSheets() >= edition.getCopies()) {
+                suitableMachines.add(machine);
+            }
+        }
+        if (suitableMachines.isEmpty()) {
+            boolean anyColorOk = machines.stream().anyMatch(PrintingMachine::supportsColor);
+            int maxSheets = machines.stream().mapToInt(PrintingMachine::getCurrentSheets).max().orElse(0);
+
+            if (!anyColorOk && needsColor) {
+                System.out.println("No printers support color printing.");
+            } else {
+                System.out.printf("No printer has enough paper. Max available: %d sheets, but needed: %d.\n", maxSheets, edition.getCopies());
+            }
+            return;
+        }
+        PrintingMachine best = suitableMachines.stream()
+                .max((a, b) -> Integer.compare(a.getPagesPerMinute(), b.getPagesPerMinute()))
+                .orElse(null);
+
+        if (best == null) {
+            System.out.println("No suitable printer found.");
+            return;
+        }
+        try {
+            best.print(edition);
+            double price = edition.getPrintPricePerCopy();
+            if (edition.getCopies() > discountThreshold) {
+                price *= (1 - discountPercent);
+            }
+            revenue += edition.getCopies() * price;
+
+            double time = (double) edition.getCopies() / best.getPagesPerMinute();
+            System.out.printf("Printed %d copies in %.2f minutes using machine: %s\n",
+                    edition.getCopies(), time, best.toString());
+        } catch (Exception e) {
+            System.out.println("Error while printing: " + e.getMessage());
+        }
+
+    }
+    public void setSelectedEdition(int index) {
+        if (index >= 0 && index < editions.size()) {
+            selectedEdition = editions.get(index);
+            System.out.println("Selected edition: " + selectedEdition.getTitle());
+        } else {
+            System.out.println("Invalid index for edition.");
+        }
+    }
+
+    public Edition getSelectedEdition() {
+        return selectedEdition;
+    }
+
+    public List<Edition> getAllEditions() {
+        return editions;
     }
 
     public String getName() {

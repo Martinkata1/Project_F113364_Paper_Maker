@@ -35,4 +35,20 @@ public class PrintingMachine {
     public int getTotalPrintedPages() {
         return printLog.values().stream().mapToInt(i -> i).sum();
     }
+    public int getPagesPerMinute() {
+        return pagesPerMinute;
+    }
+    public int getCurrentSheets() {
+        return currentSheets;
+    }
+
+    public int getMaxSheets() {
+        return maxSheets;
+    }
+    @Override
+    public String toString() {
+        return String.format("[Max sheets: %d, Color: %b, Speed: %d ppm]", maxSheets, color, pagesPerMinute);
+    }
+
+
 }
