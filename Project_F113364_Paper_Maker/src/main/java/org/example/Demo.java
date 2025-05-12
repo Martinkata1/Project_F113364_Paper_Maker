@@ -95,7 +95,7 @@ public class Demo {
                             System.out.println("7. Add printing machine");
                             System.out.println("8. Print the menu prices of paper types per piece.");
                             System.out.println("9. Back");
-                            System.out.println("10. Exit");
+                            System.out.println("0. Exit");
                             System.out.print("Choice: ");
                             int choice1 = scanner.nextInt();
                             scanner.nextLine();
@@ -117,10 +117,8 @@ public class Demo {
                                             double bonus = scanner.nextDouble();
                                             System.out.print("Revenue threshold: ");
                                             double minRev = scanner.nextDouble();
-                                            //TODO
                                             houses.get(selectedShopIndex).addEmployee(new Manager(houses.get(selectedShopIndex), name, salary, bonus, minRev));
                                         } else {
-                                            //TODO
                                             houses.get(selectedShopIndex).addEmployee(new Operator(name, salary));
                                         }
                                         break;
@@ -211,8 +209,7 @@ public class Demo {
                                         back = true;
                                         break;
                                     default:
-                                        //TODO Add return to previous menu
-                                        System.out.println("Invalid choice!");
+                                        System.out.println("Invalid choice! Try again");
                                 }
                             } catch (Exception e) {
                                 System.out.println("Error: " + e.getMessage());
@@ -220,7 +217,7 @@ public class Demo {
                         }
                         break;
                     default:
-                        //TODO add something
+                        System.out.println("Miss you sir, my beloved user!");
                         break;
                 }
             } catch (Exception e) {
