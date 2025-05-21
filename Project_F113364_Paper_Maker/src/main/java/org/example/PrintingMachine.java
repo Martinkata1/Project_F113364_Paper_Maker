@@ -2,10 +2,14 @@ package org.example;
 
 import org.example.editions.Edition;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PrintingMachine {
+    private List<PrintingMachine> machines = new ArrayList<>();
+
     private int maxSheets;
     private boolean color;
     private int pagesPerMinute;
@@ -30,6 +34,9 @@ public class PrintingMachine {
     public void print(Edition e) {
         currentSheets -= e.getCopies();
         printLog.put(e.getTitle(), printLog.getOrDefault(e.getTitle(), 0) + e.getCopies());
+    }
+    public List<PrintingMachine> getMachines() {
+        return machines;
     }
 
     public int getTotalPrintedPages() {

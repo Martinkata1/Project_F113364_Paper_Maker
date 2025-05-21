@@ -1,4 +1,4 @@
-package org.example;
+/*package org.example;
 
 import org.example.editions.*;
 import org.example.workers.*;
@@ -19,7 +19,7 @@ public class Main {
         int selectedShopIndex = -1;
 
         /* Prices of the A5 availble paper. */
-        List<Paper> a5s = new ArrayList<>();
+        /*List<Paper> a5s = new ArrayList<>();
 
         List<PrintingShop> houses = new ArrayList<>();
         //new PrintingShop(100, 0.1);
@@ -115,17 +115,23 @@ public class Main {
                                         double salary = scanner.nextDouble();
                                         System.out.print("Is manager? (true/false): ");
                                         boolean isManager = scanner.nextBoolean();
+                                        //TODO Fix this,Index 1 iut of bounds for lengths for manager and operator too
                                         if (isManager) {
                                             System.out.print("Bonus percent (e.g. 0.1): ");
                                             double bonus = scanner.nextDouble();
+                                            scanner.nextLine();
+
                                             System.out.print("Revenue threshold: ");
                                             double minRev = scanner.nextDouble();
+                                            scanner.nextLine();
+
                                             houses.get(selectedShopIndex).addEmployee(new Manager(houses.get(selectedShopIndex), name, salary, bonus, minRev));
                                         } else {
                                             houses.get(selectedShopIndex).addEmployee(new Operator(name, salary));
                                         }
                                         break;
                                     case 2:
+                                        //TODO No enum constant org.example.editions.Paper.Type.Regular, fix it
                                         if (selectedShopIndex == -1) {
                                             System.out.println("Please select a shop first using option 7.");
                                             break;
@@ -156,6 +162,7 @@ public class Main {
                                         }
                                         break;
                                     case 3:
+                                        //TODO NO ENUM CONSTANT org.example.editions.Paper.Type.Regular
                                         if (selectedShopIndex == -1) {
                                             System.out.println("Please select a shop first using option 7.");
                                             break;
@@ -169,16 +176,23 @@ public class Main {
                                         houses.get(selectedShopIndex).addPaper(new Paper(pt, ps, bp));
                                         break;
                                     case 4:
+                                        //TODO ERROR Index 1 out of bounds for length 0
                                         if (selectedShopIndex == -1) {
                                             System.out.println("Please select a shop first using option 7.");
                                             break;
                                         }
                                         System.out.print("Max sheets: ");
                                         int max = scanner.nextInt();
+                                        scanner.nextLine();
+
                                         System.out.print("Supports color? (true/false): ");
                                         boolean color = scanner.nextBoolean();
+                                        scanner.nextLine();
+
                                         System.out.print("Pages per minute: ");
                                         int ppm = scanner.nextInt();
+                                        scanner.nextLine();
+
                                         houses.get(selectedShopIndex).setMachine(new PrintingMachine(max, color, ppm));
                                         System.out.println("Successfully added printing machine with specs: " + max + " sheets, " + (color ? "color" : "black and white") + ", " + ppm + " pages per minute.");
                                         break;
@@ -187,16 +201,16 @@ public class Main {
                                             System.out.println("Please select a shop first using option 7.");
                                             break;
                                         }
-                                        if (houses.get(selectedShopIndex).getLatestEdition() == null || /*houses.get(0).getMachine() == null ||*/ houses.get(0).paperStock == null || houses.get(00).paperStock.isEmpty()) {
-                                            System.out.println("Not enough data to print.");
-                                            break;
-                                        }
-                                        houses.get(selectedShopIndex).printEdition(
-                                                houses.get(selectedShopIndex).getLatestEdition(),
-                                                houses.get(selectedShopIndex).paperStock.get(0),
-                                                true
-                                        );
-                                        System.out.println("Edition printed successfully!");
+                                        //if (houses.get(selectedShopIndex).getLatestEdition() == null || /*houses.get(0).getMachine() == null ||*/ //houses.get(0).paperStock == null || houses.get(00).paperStock.isEmpty()) {
+                                          //  System.out.println("Not enough data to print.");
+                                          //  break;
+                                        //}
+                                        //houses.get(selectedShopIndex).printEdition(
+                                               // houses.get(selectedShopIndex).getLatestEdition(),
+                                                //houses.get(selectedShopIndex).paperStock.get(0),
+                                                //true
+                                        //);
+                                        /*System.out.println("Edition printed successfully!");
                                         break;
                                     case 6:
                                         if (selectedShopIndex == -1) {
@@ -206,6 +220,34 @@ public class Main {
 
                                         System.out.printf("Revenue: %.2f, Expenses: %.2f\n", houses.get(selectedShopIndex).getRevenue(), houses.get(0).calculateExpenses());
                                         break;
+                                    case 7:
+                                        //TODO add option to add machine printer
+                                        PrintingShop selectedShopForMachine = houses.get(selectedShopIndex);
+                                        System.out.print("Enter max sheets capacity: ");
+                                        int maxSheets = Integer.parseInt(scanner.nextLine());
+
+                                        System.out.print("Supports color (true/false): ");
+                                        boolean supportsColor = Boolean.parseBoolean(scanner.nextLine());
+
+                                        System.out.print("Enter pages per minute: ");
+                                        int pm = Integer.parseInt(scanner.nextLine());
+
+                                        PrintingMachine newMachine = new PrintingMachine(maxSheets, supportsColor, pm);
+                                        selectedShopForMachine.addMachine(newMachine);
+                                        System.out.println("Machine added successfully!");
+                                        break;
+
+                                    case 8:
+                                        //TODO show menu for prices
+                                        double baseA5Price = 1.0; // You can replace this with dynamic shop-specific pricing if needed
+
+                                        System.out.println("Paper price multipliers (base A5 = " + baseA5Price + "):");
+                                        for (Paper.Size size1 : Paper.Size.values()) {
+                                            double finalPrice = baseA5Price * size1.getMultiplier();
+                                            System.out.printf("- %s: %.2f\n", size1.name(), finalPrice);
+                                        }
+
+                                    break;
                                     case 9:
                                         if (selectedShopIndex == -1) {
                                             System.out.println("Please select a shop first.");
@@ -225,6 +267,7 @@ public class Main {
                                         houses.get(selectedShopIndex).setSelectedEdition(editionIndex);
                                         break;
                                     case 11:
+                                        //TODO fix it
                                         //FileWriter writer = new FileWriter("report.txt");;
                                         houses.get(selectedShopIndex).saveReportToFile("report.txt");
                                         //if (Desktop.isDesktopSupported()) {
@@ -235,6 +278,7 @@ public class Main {
                                         //writer.close();
                                         break;
                                     case 12:
+                                        //TODO fix it
                                         houses.get(selectedShopIndex).loadReportFromFile("report.txt");
                                         if (Desktop.isDesktopSupported()) {
                                             Desktop.getDesktop().open(new File("report.txt"));
@@ -272,4 +316,4 @@ public class Main {
             }
         }
     }
-}
+}*/

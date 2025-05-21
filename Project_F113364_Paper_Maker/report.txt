@@ -1,5 +1,0 @@
-=== Report for Printing Shop ===
-Name: My Print Shop
-Revenue: 0.00
-Expenses: 3200.00
-Printed editions:
