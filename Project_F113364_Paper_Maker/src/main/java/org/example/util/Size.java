@@ -1,5 +1,8 @@
 package org.example.util;
 
+/**
+ * Added Size for Paper
+ */
 public enum Size {
     A5(1.0),
     A4(1.5),

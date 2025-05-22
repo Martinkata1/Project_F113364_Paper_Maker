@@ -4,6 +4,9 @@ package org.example.workers;
 import org.example.PrintingShop;
 
 import java.io.Serializable;
+/**
+ * Added Role Operator as Employee
+ */
 
 public class Manager extends Employee implements Serializable {
     private static final long serialVersionUID = 1L;

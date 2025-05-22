@@ -13,9 +13,18 @@ import java.io.FileWriter;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Main file where to start and end application
+ */
 public class Main {
 
     public static void main(String[] args) {
+        /**
+         * Scanner for user using
+         * selectedShop, because you can own 10 shops
+         * base price for 1 paper for every shop can be different
+         * list of shops if you own more than 1
+         */
         Scanner scanner = new Scanner(System.in);
 
         int selectedShopIndex = -1;
@@ -28,12 +37,15 @@ public class Main {
 
 
         while (true) {
+            /**
+             * Menu for user
+             */
             System.out.println("\nMenu:");
             System.out.println("1. Add printing shop");
             System.out.println("2. Select printing shop");
             System.out.println("3. Show me selected shop now");
             System.out.println("4. We have work here.");
-            System.out.println("5. Export report");
+            //System.out.println("5. Export report");
             System.out.println("0. Exit");
             System.out.print("Choice: ");
             int choice = scanner.nextInt();
@@ -41,6 +53,9 @@ public class Main {
             try {
                 switch (choice) {
                     case 1:
+                        /**
+                         * Adding shop
+                         */
                         System.out.println("Enter shop name: ");
                         String shopName = scanner.nextLine();
                         System.out.print("Enter starting revenue: ");
@@ -60,6 +75,9 @@ public class Main {
                         }
                     break;
                     case 2:
+                        /**
+                         * Switch shop
+                         */
                         if (houses.isEmpty()) {
                             System.out.println("No shops available. Add one first.");
                             break;
@@ -82,6 +100,9 @@ public class Main {
                         }
                         break;
                     case 3:
+                        /**
+                         * Show which shop is selected
+                         */
                         if (selectedShopIndex == -1) {
                             System.out.println("No shop selected. Please select a shop first.");
                             break;
@@ -89,8 +110,14 @@ public class Main {
                         System.out.println("You choosed shop: " + houses.get(selectedShopIndex).getName());
                         break;
                     case 4:
+                        /**
+                         * Entering in selected shop and showing how bad is in
+                         */
                         boolean back = false;
                         while (!back) {
+                            /**
+                             * Menu for user, if you choose 10, will return to shops
+                             */
                             System.out.println("\nMenu:");
                             System.out.println("1. Add employee");
                             System.out.println("2. Add edition");
@@ -99,9 +126,11 @@ public class Main {
                             System.out.println("5. Print latest edition");
                             System.out.println("6. Show revenue and expenses");//TODO
                             System.out.println("7. Show every machine printer.");
-                            System.out.println("8. Print the menu prices of paper types per piece.");//TODO
-                            System.out.println("9. Select Edition");//TODO
+                            System.out.println("8. Print the menu prices of paper types per piece.");
+                            System.out.println("9. Select Edition");
                             System.out.println("10. Back");
+                            System.out.println("11. Serialize Employees");
+                            System.out.println("12. Deserialize Employees");
                             System.out.println("0. Exit");
                             System.out.print("Choice: ");
                             int choice1 = scanner.nextInt();
@@ -109,6 +138,9 @@ public class Main {
                             try {
                                 switch (choice1) {
                                     case 1:
+                                        /**
+                                         * Adding employee
+                                         */
                                         if (selectedShopIndex < 0 || selectedShopIndex >= houses.size()) {
                                             System.out.println("Invalid shop number.");
                                             selectedShopIndex = -1;
@@ -142,6 +174,9 @@ public class Main {
                                          **/
                                         break;
                                     case 2:
+                                        /**
+                                         * Adding Edition
+                                         */
                                         if (selectedShopIndex == -1) {
                                             System.out.println("Please select a shop first using option 7.");
                                             break;
@@ -218,6 +253,9 @@ public class Main {
                                          **/
                                         break;
                                     case 3:
+                                        /**
+                                         * Adding Machine printer
+                                         */
                                         if (houses.isEmpty()) {
                                             System.out.println("No printing shops available. Please add one first.");
                                             break;
@@ -251,6 +289,9 @@ public class Main {
                                      * SUCCESS! ADDED MACHINES WITHOUT PROBLEM
                                      */
                                     case 4:
+                                        /**
+                                         * Putting information in ticket.txt, somehow like report
+                                         */
                                         if (selectedShopIndex == -1) {
                                             System.out.println("Please select a shop first.");
                                             break;
@@ -262,14 +303,30 @@ public class Main {
                                         System.out.println("Full shop snapshot appended to ticket.txt");
                                         break;
                                     case 5:
+                                        /**
+                                         * Printing newestEdition or selected one, if you have possibly printers
+                                         */
                                         if (selectedShopIndex == -1) {
                                             System.out.println("Please select a shop first.");
                                             break;
                                         }
 
-                                        houses.get(selectedShopIndex).printLatestEdition();
-                                        break;
+                                        try {
+                                            houses.get(selectedShopIndex).printEdition(
+                                                    houses.get(selectedShopIndex).getLatestEdition()
+                                                    //Paper.Type.valueOf(scanner.nextLine().toUpperCase()),
+                                                    //(PrintingMachine) houses.get(selectedShopIndex).getAllMachines()
+                                            );
+                                            System.out.println("Edition printed successfully!");
+                                        } catch (InvalidPrintTypeException e) {
+                                            System.out.println("Print error: " + e.getMessage());
+                                        } catch (Exception e) {
+                                            System.out.println("General error: " + e.getMessage());
+                                        }
                                     case 6:
+                                        /**
+                                         * Showing terminal report, can show how bad is the business
+                                         */
                                         if (selectedShopIndex == -1) {
                                             System.out.println("Please select a shop first using option 7.");
                                             break;
@@ -278,6 +335,9 @@ public class Main {
                                         System.out.printf("Revenue: %.2f, Expenses: %.2f\n", houses.get(selectedShopIndex).getRevenue(), houses.get(0).calculateExpenses());
                                         break;
                                     case 7:
+                                        /**
+                                         * Showing every printer
+                                         */
                                         if (selectedShopIndex == -1 || houses.isEmpty()) {
                                             System.out.println("No shop selected.");
                                             break;
@@ -296,17 +356,20 @@ public class Main {
                                         }
                                         break;
                                     case 8:
-                                        //TODO show menu for prices
-                                        double baseA5Price = 1.0; // You can replace this with dynamic shop-specific pricing if needed
-
-                                        System.out.println("Paper price multipliers (base A5 = " + baseA5Price + "):");
+                                        /**
+                                         * Menu prices by size
+                                         */
+                                        System.out.println("Paper price multipliers (base A5 = " + houses.get(selectedShopIndex).getPriceBase() + "):");
                                         for (Size size1 : Size.values()) {
-                                            double finalPrice1 = baseA5Price * size1.getMultiplier();
+                                            double finalPrice1 = houses.get(selectedShopIndex).getPriceBase() * size1.getMultiplier();
                                             System.out.printf("- %s: %.2f\n", size1.name(), finalPrice1);
                                         }
 
                                     break;
                                     case 9:
+                                        /**
+                                         * Showing every edition created and information for them
+                                         */
                                         if (selectedShopIndex == -1) {
                                             System.out.println("Please select a shop first.");
                                             break;
@@ -324,46 +387,66 @@ public class Main {
                                         int editionIndex = scanner.nextInt() - 1;
                                         houses.get(selectedShopIndex).setSelectedEdition(editionIndex);
                                         break;
-                                    case 11:
+                                    /*case 11:
                                         //TODO fix it
-                                        //FileWriter writer = new FileWriter("report.txt");;
-                                        //houses.get(selectedShopIndex).saveReportToFile("report.txt");
-                                        //if (Desktop.isDesktopSupported()) {
-                                        //    Desktop.getDesktop().open(new File("report.txt"));
-                                        //} else {
-                                        //    System.out.println("Desktop suck at this system.");
-                                        //}
-                                        //writer.close();
+                                        FileWriter writer = new FileWriter("report.txt");;
+                                        houses.get(selectedShopIndex).saveReportToFile("report.txt");
+                                        if (Desktop.isDesktopSupported()) {
+                                            Desktop.getDesktop().open(new File("report.txt"));
+                                        } else {
+                                            System.out.println("Desktop suck at this system.");
+                                        }
+                                        writer.close();
                                         break;
                                     case 12:
-                                        //TODO fix it
                                         houses.get(selectedShopIndex).loadReportFromFile("report.txt");
                                         if (Desktop.isDesktopSupported()) {
                                             Desktop.getDesktop().open(new File("report.txt"));
                                         } else {
                                             System.out.println("Desktop suck at this system.");
                                         }
-                                        break;
-                                    case 13:
+                                        break;*/
+                                    case 11:
+                                        /**
+                                         * Serialize employees in employees.ser
+                                         */
                                         houses.get(selectedShopIndex).serializeEmployees("employees.ser");
                                         break;
-                                    case 14:
+                                    case 12:
+                                        /**
+                                         * Deserialize employees in employees.ser
+                                         */
                                         houses.get(selectedShopIndex).deserializeEmployees("employees.ser");
                                         break;
                                     case 0:
+                                        /**
+                                         * Just nothing
+                                         */
                                         return;
                                     case 10:
+                                        /**
+                                         * Return to shops
+                                         */
                                         back = true;
                                         break;
                                     default:
+                                        /**
+                                         * Try again, like making more safe application
+                                         */
                                         System.out.println("Invalid choice! Try again");
                                 }
                             } catch (Exception e) {
+                                /**
+                                 * When i made problem, i will eat the wood.
+                                 */
                                 System.out.println("Error: " + e.getMessage());
                             }
                         }
                         break;
                     default:
+                        /**
+                         * Saying bye to my beloved user. And deleting the report.txt
+                         */
                         System.out.println("Miss you sir, my beloved user!");
                         new File("report.txt").delete();
                         houses.clear();

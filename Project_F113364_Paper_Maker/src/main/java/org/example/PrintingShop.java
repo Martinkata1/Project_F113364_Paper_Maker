@@ -9,8 +9,18 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+/**
+ * Added PrintingShop
+ * implements Serializable, because of employees to be serialized and deserialized
+ */
 public class PrintingShop implements Serializable {
+    /**
+     * serial version for employees
+     * name for shop
+     * revenue for shop
+     * when you can get discount and by percent 10%
+     * price base for 1 paper
+     */
     private static final long serialVersionUID = 1L;
 
     private final String name;
@@ -23,15 +33,23 @@ public class PrintingShop implements Serializable {
 
     private double priceBase;
 
+    /**
+     * LIST OF EMPLOYEE, MACHINES, PAPERSTOCK, EDITIONS, EDITIONMILEAGE
+     */
     private final List<Employee> employees     = new ArrayList<>();
     private final List<PrintingMachine> machines = new ArrayList<>();
     private final List<Paper> paperStock       = new ArrayList<>();
     private final List<Edition> editions       = new ArrayList<>();
     private final Map<String, Integer> editionMileage = new HashMap<>();
 
+    /**
+     * SELECTED EDITION
+     */
 
     private Edition selectedEdition;
-
+    /**
+     * CONSTRUCTOR
+     */
 
     public PrintingShop(String name, double startRevenue/*, double expenseRate*/, double priceBase) {
         this.name         = name;
@@ -41,7 +59,9 @@ public class PrintingShop implements Serializable {
     }
 
 
-
+    /**
+     * METHODS
+     */
     public void addEdition(Edition e)      { editions.add(e); }
     public void addEmployee(Employee e)    { employees.add(e); }
     public void addPaper(Paper p)          { paperStock.add(p); }
@@ -50,46 +70,50 @@ public class PrintingShop implements Serializable {
     public void setMachine(PrintingMachine m) { machines.add(m); }
 
 
-    public void printEdition(Edition edition) {
+    public void printEdition(Edition edition) throws InvalidPrintTypeException {
         if (edition == null) {
-            System.out.println("No edition specified.");
-            return;
+            throw new InvalidPrintTypeException("No edition specified.");
         }
+
         if (machines.isEmpty()) {
-            System.out.println("No printing machines in this shop.");
-            return;
+            throw new InvalidPrintTypeException("No printing machines available.");
         }
 
-        List<PrintingMachine> candidates = machines.stream()
-                .filter(m -> m.getCurrentSheets() >= edition.getCopies())
-                .filter(m -> !edition.isColor() || m.supportsColor())
-                .collect(Collectors.toList());
+        PrintingMachine best = machines.get(0);
 
-        if (candidates.isEmpty()) {
-            System.out.println("No machine has enough sheets (or colour capability).");
-            return;
+        for (PrintingMachine m : machines) {
+            boolean hasEnoughPaper = m.getMaxSheets() >= edition.getCopies();
+            boolean supportsColor = edition.isColor() || m.supportsColor();
+
+            if (hasEnoughPaper && supportsColor) {
+                best = m;
+                // Pick the smallest machine (by maxSheets) that can handle it
+               // if (m.getMaxSheets() < best.getMaxSheets()) {
+                //    best = m;
+                //}
+            }
         }
 
-        candidates.sort(
-                Comparator.comparingInt(PrintingMachine::getMaxSheets)
-                        .thenComparing(Comparator.comparingInt(
-                                PrintingMachine::getPagesPerMinute).reversed())
-        );
-        PrintingMachine best = candidates.get(0);
+        if (best == null) {
+            throw new InvalidPrintTypeException(
+                    "No suitable machine: check colour capability or load more paper.");
+        }
 
         best.print(edition);
-
         editionMileage.merge(edition.getTitle(), 1, Integer::sum);
-
         System.out.printf("Printed on %s%n", best);
     }
+
+
 
 
     public int getEditionMileage(String title) {
         return editionMileage.getOrDefault(title, 0);
     }
 
-
+    /**
+     * SERIALIZATION
+     */
     public void serializeEmployees(String filePath) {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
             out.writeObject(employees);
@@ -98,6 +122,9 @@ public class PrintingShop implements Serializable {
             System.out.println("Serialization error: " + e.getMessage());
         }
     }
+    /**
+     * GETTERS
+     */
     public Employee getLatestEmployee() {
         if (employees.isEmpty()) return null;
         return employees.get(employees.size() - 1);
@@ -142,7 +169,7 @@ public class PrintingShop implements Serializable {
 
     public void saveReportToFile(String filePath, boolean append) {
         try (PrintWriter pw = new PrintWriter(
-                new FileWriter(filePath, append)))      // ← APPEND flag
+                new FileWriter(filePath, append)))
         {
             pw.print(buildFullReport());
         } catch (IOException e) {
@@ -191,8 +218,8 @@ public class PrintingShop implements Serializable {
         if (editions.isEmpty()) return null;
         return editions.get(editions.size() - 1);
     }
-    public void printLatestEdition() {
-        printEdition(getLatestEdition());
+    public void printLatestEdition() throws InvalidPrintTypeException {
+        printEdition(getLatestEdition()/*, (PrintingMachine) getAllMachines()*/);
     }
 
     // Prints a short summary of the newest edition
@@ -228,5 +255,11 @@ public class PrintingShop implements Serializable {
 
     public List<PrintingMachine> getAllMachines() {
         return Collections.unmodifiableList(machines);
+    }
+
+    public void saveReportToFile(String file) {
+    }
+    public List<Employee> getAllEmployees(){
+        return Collections.unmodifiableList(employees);
     }
 }

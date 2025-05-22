@@ -3,6 +3,11 @@ package org.example.editions;
 import org.example.util.Size;
 import org.example.util.Type;
 
+/**
+ * Added Paper class for Editions
+ * It has type, size and basePrice
+ * basePrice is multiplied by size
+ */
 public class Paper {
     private Type type;
     private Size size;

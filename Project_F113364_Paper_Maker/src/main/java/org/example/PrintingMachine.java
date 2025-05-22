@@ -7,21 +7,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Added Machine Printers
+ */
+
 public class PrintingMachine {
+    /**
+     *  List of all printing machines
+     */
     private List<PrintingMachine> machines = new ArrayList<>();
 
+    /**
+     *  Maximum number of sheets,
+     *  color and pages per minute
+     */
     private int maxSheets;
     private boolean color;
     private int pagesPerMinute;
     private int currentSheets = 0;
     private Map<String, Integer> printLog = new HashMap<>();
 
+    /**
+     *  Constructor
+     */
     public PrintingMachine(int maxSheets, boolean color, int ppm) {
         this.maxSheets = maxSheets;
         this.color = color;
         this.pagesPerMinute = ppm;
     }
-
+    /**
+     *  Methods
+     */
     public void loadPaper(int sheets) throws Exception {
         if (sheets + currentSheets > maxSheets) {
             throw new Exception("Not enough paper capacity.");
@@ -35,6 +51,9 @@ public class PrintingMachine {
         currentSheets -= e.getCopies();
         printLog.put(e.getTitle(), printLog.getOrDefault(e.getTitle(), 0) + e.getCopies());
     }
+    /**
+     *  Getters
+     */
     public List<PrintingMachine> getMachines() {
         return machines;
     }

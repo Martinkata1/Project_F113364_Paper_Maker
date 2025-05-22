@@ -1,10 +1,1 @@
-=== Ticket ===
-Tittle: Bulk Print
-Copies: 200
-Size: A4
-Coloured: Yes
-Machine: 1342346098 (Coloured: true)
-Price for one copy: 5.00
-Discount: 20%
-Total price: 800.00
-Total revenue: 1600.00
+

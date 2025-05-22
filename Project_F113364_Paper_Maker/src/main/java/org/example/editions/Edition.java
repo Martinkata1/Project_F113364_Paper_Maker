@@ -1,5 +1,10 @@
 package org.example.editions;
 
+/**
+ * Added Edition class
+ * It has title, copies, paper, color, size for every Edition
+ * like for book, poster, newspaper
+ */
 public  class Edition {
 
     private String title = "";
