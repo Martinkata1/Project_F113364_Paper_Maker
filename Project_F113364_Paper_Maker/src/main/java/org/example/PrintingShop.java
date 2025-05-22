@@ -18,10 +18,12 @@ public class PrintingShop implements Serializable {
     private final String name;
 
     private double revenue;
-    private final double expenseRate;
+    //private final double expenseRate;
 
     private double discountThreshold = 500;
     private double discountPercent   = 0.10;
+
+    private double BasePrice;
 
     private final List<Employee> employees     = new ArrayList<>();
     private final List<PrintingMachine> machines = new ArrayList<>();
@@ -31,10 +33,11 @@ public class PrintingShop implements Serializable {
     private Edition selectedEdition;
 
 
-    public PrintingShop(String name, double startRevenue, double expenseRate) {
+    public PrintingShop(String name, double startRevenue/*, double expenseRate*/, double BasePrice) {
         this.name         = name;
         this.revenue      = startRevenue;
-        this.expenseRate  = expenseRate;
+        //this.expenseRate  = expenseRate;
+        this.BasePrice = BasePrice;
     }
 
 
@@ -96,6 +99,10 @@ public class PrintingShop implements Serializable {
             System.out.println("Serialization error: " + e.getMessage());
         }
     }
+    public Employee getLatestEmployee() {
+        if (employees.isEmpty()) return null;
+        return employees.get(employees.size() - 1);
+    }
 
     public void deserializeEmployees(String filePath) {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
@@ -137,8 +144,13 @@ public class PrintingShop implements Serializable {
     }
 
 
+
     public String getName()                 { return name; }
     public double getRevenue()              { return revenue; }
+
+    public double getPriceBase(){
+        return getPriceBase();
+    }
     public List<Employee> getEmployees()    { return Collections.unmodifiableList(employees); }
 
     public List<Manager> getManagers() {
@@ -165,7 +177,7 @@ public class PrintingShop implements Serializable {
     public double calculateExpenses() {
         return employees.stream()
                 .mapToDouble(Employee::getBaseSalary)
-                .sum() * expenseRate; // simple rule: salary × shop‑expense‑rate
+                .sum() /* expenseRate*/; // simple rule: salary × shop‑expense‑rate
     }
 
 

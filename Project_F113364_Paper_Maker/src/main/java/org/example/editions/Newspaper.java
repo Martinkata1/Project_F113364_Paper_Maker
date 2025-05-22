@@ -1,10 +1,10 @@
 package org.example.editions;
 
-public abstract class Newspaper extends Edition {
+public  class Newspaper extends Edition {
     private double price;
-    public Newspaper(String title, int copies,boolean color,  double price, Paper paper) {
+    public Newspaper(String title, int copies, boolean color, Paper paper) {
         super(title, copies, color, paper);
-        this.price = price;
+        //this.price = price;
     }
-    public double getPrintPricePerCopy(double price) { return this.price; }
+    //public double getPrintPricePerCopy(double price) { return this.price; }
 }

@@ -7,8 +7,7 @@ public  class Edition {
     private int copies;
 
     private Paper paper;
-    //private Type type;
-    //private Size size;
+
     private boolean color;
     private double getPrintPricePerCopy;
 

@@ -1,6 +1,8 @@
-/*package org.example;
+package org.example;
 
 import org.example.editions.*;
+import org.example.util.Size;
+import org.example.util.Type;
 import org.example.workers.*;
 
 
@@ -19,7 +21,7 @@ public class Main {
         int selectedShopIndex = -1;
 
         /* Prices of the A5 availble paper. */
-        /*List<Paper> a5s = new ArrayList<>();
+        List<Paper> a5s = new ArrayList<>();
 
         List<PrintingShop> houses = new ArrayList<>();
         //new PrintingShop(100, 0.1);
@@ -45,14 +47,17 @@ public class Main {
                         String shopName = scanner.nextLine();
                         System.out.print("Enter starting revenue: ");
                         double rev = scanner.nextDouble();
-                        System.out.print("Enter expense rate: ");
-                        double rate = scanner.nextDouble();
-                        houses.add(new PrintingShop(shopName, rev, rate));
+                        //System.out.print("Enter expense rate: ");
+                        //double rate = scanner.nextDouble();
+                        System.out.println("Please write me base price for A5 size paper: ");
+                        double BasePrice = scanner.nextDouble();
+                        scanner.nextLine();
+                        houses.add(new PrintingShop(shopName, rev/*, rate*/, BasePrice));
                         System.out.println("Printing shop added!");
 
                         if (selectedShopIndex == -1) {
                             selectedShopIndex = houses.size() - 1;
-                            System.out.println("Shop '" + shopName + "' automatically selected.");
+                            System.out.println("Shop '" + shopName + "' automatically selected with base price for A5 "+ houses.get(selectedShopIndex).getPriceBase() +".");
                         }
                         break;
                     case 2:
@@ -105,30 +110,33 @@ public class Main {
                             try {
                                 switch (choice1) {
                                     case 1:
-                                        if (selectedShopIndex == -1) {
-                                            System.out.println("Please select a shop first using option 7.");
-                                            break;
-                                        }
                                         System.out.print("Name: ");
                                         String name = scanner.nextLine();
                                         System.out.print("Salary: ");
                                         double salary = scanner.nextDouble();
                                         System.out.print("Is manager? (true/false): ");
                                         boolean isManager = scanner.nextBoolean();
-                                        //TODO Fix this,Index 1 iut of bounds for lengths for manager and operator too
                                         if (isManager) {
                                             System.out.print("Bonus percent (e.g. 0.1): ");
                                             double bonus = scanner.nextDouble();
-                                            scanner.nextLine();
-
                                             System.out.print("Revenue threshold: ");
                                             double minRev = scanner.nextDouble();
-                                            scanner.nextLine();
-
                                             houses.get(selectedShopIndex).addEmployee(new Manager(houses.get(selectedShopIndex), name, salary, bonus, minRev));
                                         } else {
                                             houses.get(selectedShopIndex).addEmployee(new Operator(name, salary));
                                         }
+                                        /**
+                                         * checker to return name
+                                         */
+                                        Employee newest = houses.get(selectedShopIndex).getLatestEmployee();
+                                        if (newest != null) {
+                                            System.out.println("Newest employee: " + newest.getName() +
+                                                    ", Salary: " + newest.getBaseSalary() +
+                                                    ", Role: " + (newest instanceof Manager ? "Manager" : "Operator"));
+                                        }
+                                        /**
+                                         * HAPPY ENDING, WORKED
+                                         **/
                                         break;
                                     case 2:
                                         //TODO No enum constant org.example.editions.Paper.Type.Regular, fix it
@@ -143,21 +151,23 @@ public class Main {
                                         System.out.print("Copies: ");
                                         int copies = scanner.nextInt();
                                         System.out.print("Size (A5, A4, A3, A2, A1): ");
-                                        Paper.Size size = Paper.Size.valueOf(scanner.next());
+                                        Size size = Size.valueOf(scanner.next());
                                         System.out.print("Size (REGULAR, GLOSSY, NEWSPAPER): ");
-                                        Paper.Type type = Paper.Type.valueOf(scanner.next());
-                                        Paper paper = new Paper(type, size, 0.5);
-                                        System.out.print("Print price: ");
-                                        double price = scanner.nextDouble();
+                                        Type type = Type.valueOf(scanner.next());
+                                        System.out.println("Is the edition coloured? false/true");
+                                        boolean color = Boolean.parseBoolean(scanner.nextLine());
+                                        //System.out.print("Print price: ");
+                                        //double price = scanner.nextDouble();
+                                        Paper paper = new Paper(type, size, houses.get(selectedShopIndex).getPriceBase());
                                         switch (edition.toLowerCase()) {
                                             case "book":
-                                                houses.get(selectedShopIndex).addEdition(new Book(title, copies, paper, price));
+                                                houses.get(selectedShopIndex).addEdition(new Book(title, copies, color, paper));
                                                 break;
                                             case "poster":
-                                                houses.get(selectedShopIndex).addEdition(new Poster(title, copies, paper, price));
+                                                houses.get(selectedShopIndex).addEdition(new Poster(title, copies,color, paper));
                                                 break;
                                             case "newspaper":
-                                                houses.get(selectedShopIndex).addEdition(new Newspaper(title, copies, paper, price));
+                                                houses.get(selectedShopIndex).addEdition(new Newspaper(title, copies, color, paper));
                                                 break;
                                         }
                                         break;
@@ -168,9 +178,9 @@ public class Main {
                                             break;
                                         }
                                         System.out.print("Paper type (REGULAR, GLOSSY, NEWSPAPER): ");
-                                        Paper.Type pt = Paper.Type.valueOf(scanner.next());
+                                        Type pt = Type.valueOf(scanner.next());
                                         System.out.print("Size: ");
-                                        Paper.Size ps = Paper.Size.valueOf(scanner.next());
+                                        Size ps = Size.valueOf(scanner.next());
                                         System.out.print("Base price: ");
                                         double bp = scanner.nextDouble();
                                         houses.get(selectedShopIndex).addPaper(new Paper(pt, ps, bp));
@@ -186,15 +196,15 @@ public class Main {
                                         scanner.nextLine();
 
                                         System.out.print("Supports color? (true/false): ");
-                                        boolean color = scanner.nextBoolean();
+                                        boolean color1 = scanner.nextBoolean();
                                         scanner.nextLine();
 
                                         System.out.print("Pages per minute: ");
                                         int ppm = scanner.nextInt();
                                         scanner.nextLine();
 
-                                        houses.get(selectedShopIndex).setMachine(new PrintingMachine(max, color, ppm));
-                                        System.out.println("Successfully added printing machine with specs: " + max + " sheets, " + (color ? "color" : "black and white") + ", " + ppm + " pages per minute.");
+                                        houses.get(selectedShopIndex).setMachine(new PrintingMachine(max, color1, ppm));
+                                        System.out.println("Successfully added printing machine with specs: " + max + " sheets, " + (color1 ? "color" : "black and white") + ", " + ppm + " pages per minute.");
                                         break;
                                     case 5:
                                         if (selectedShopIndex == -1) {
@@ -210,7 +220,7 @@ public class Main {
                                                 //houses.get(selectedShopIndex).paperStock.get(0),
                                                 //true
                                         //);
-                                        /*System.out.println("Edition printed successfully!");
+                                        System.out.println("Edition printed successfully!");
                                         break;
                                     case 6:
                                         if (selectedShopIndex == -1) {
@@ -242,7 +252,7 @@ public class Main {
                                         double baseA5Price = 1.0; // You can replace this with dynamic shop-specific pricing if needed
 
                                         System.out.println("Paper price multipliers (base A5 = " + baseA5Price + "):");
-                                        for (Paper.Size size1 : Paper.Size.values()) {
+                                        for (Size size1 : Size.values()) {
                                             double finalPrice = baseA5Price * size1.getMultiplier();
                                             System.out.printf("- %s: %.2f\n", size1.name(), finalPrice);
                                         }
@@ -316,4 +326,4 @@ public class Main {
             }
         }
     }
-}*/
+}

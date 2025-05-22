@@ -2,7 +2,7 @@ package org.example.workers;
 
 import java.io.Serializable;
 
-public abstract class Employee implements Serializable {
+public  class Employee implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String name;
@@ -13,7 +13,7 @@ public abstract class Employee implements Serializable {
         this.name = name;
         this.baseSalary = baseSalary;
     }
-
+    public String getName(){return name;}
     public double getBaseSalary() {
         return baseSalary;
     }

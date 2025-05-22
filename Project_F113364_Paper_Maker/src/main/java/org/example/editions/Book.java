@@ -1,13 +1,14 @@
 package org.example.editions;
 
 
-public abstract class Book extends Edition {
+public  class Book extends Edition {
     private double price;
+    private boolean color;
 
-    public Book(String title, int copies, boolean color, double price, Paper paper) {
+    public Book(String title, int copies, boolean color, Paper paper) {
         super(title, copies, color, paper);
-        this.price = price;
+        //this.price = price;
     }
 
-    public double getPrintPricePerCopy(double price) { return this.price; }
+    //public double getPrintPricePerCopy(double price) { return this.price; }
 }
