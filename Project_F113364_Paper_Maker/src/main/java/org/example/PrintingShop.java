@@ -6,9 +6,7 @@ import org.example.workers.Employee;
 import org.example.workers.Manager;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -23,21 +21,23 @@ public class PrintingShop implements Serializable {
     private double discountThreshold = 500;
     private double discountPercent   = 0.10;
 
-    private double BasePrice;
+    private double priceBase;
 
     private final List<Employee> employees     = new ArrayList<>();
     private final List<PrintingMachine> machines = new ArrayList<>();
     private final List<Paper> paperStock       = new ArrayList<>();
     private final List<Edition> editions       = new ArrayList<>();
+    private final Map<String, Integer> editionMileage = new HashMap<>();
+
 
     private Edition selectedEdition;
 
 
-    public PrintingShop(String name, double startRevenue/*, double expenseRate*/, double BasePrice) {
+    public PrintingShop(String name, double startRevenue/*, double expenseRate*/, double priceBase) {
         this.name         = name;
         this.revenue      = startRevenue;
         //this.expenseRate  = expenseRate;
-        this.BasePrice = BasePrice;
+        this.priceBase = priceBase;
     }
 
 
@@ -50,45 +50,44 @@ public class PrintingShop implements Serializable {
     public void setMachine(PrintingMachine m) { machines.add(m); }
 
 
-    public void printEdition(Edition edition, Paper paper, boolean color) throws Exception
-    {
+    public void printEdition(Edition edition) {
         if (edition == null) {
             System.out.println("No edition specified.");
             return;
         }
         if (machines.isEmpty()) {
-            System.out.println("No printing machines available in this shop.");
+            System.out.println("No printing machines in this shop.");
             return;
         }
 
-        // filter machines that can handle the job
         List<PrintingMachine> candidates = machines.stream()
-                .filter(m -> (!color || m.supportsColor()) && m.getCurrentSheets() >= edition.getCopies())
+                .filter(m -> m.getCurrentSheets() >= edition.getCopies())
+                .filter(m -> !edition.isColor() || m.supportsColor())
                 .collect(Collectors.toList());
 
         if (candidates.isEmpty()) {
-            System.out.println("No suitable machine can print this job (color or paper capacity mismatch).");
+            System.out.println("No machine has enough sheets (or colour capability).");
             return;
         }
 
-        // pick the fastest one
-        PrintingMachine best = Collections.max(candidates, (a, b) -> Integer.compare(a.getPagesPerMinute(), b.getPagesPerMinute()));
+        candidates.sort(
+                Comparator.comparingInt(PrintingMachine::getMaxSheets)
+                        .thenComparing(Comparator.comparingInt(
+                                PrintingMachine::getPagesPerMinute).reversed())
+        );
+        PrintingMachine best = candidates.get(0);
 
         best.print(edition);
 
-        /*double pricePerCopy = edition.getPrintPricePerCopy();
-        if (edition.getCopies() > discountThreshold) {
-            pricePerCopy *= (1 - discountPercent);
-        }
-        revenue += pricePerCopy * edition.getCopies();
+        editionMileage.merge(edition.getTitle(), 1, Integer::sum);
 
-        double minutes = (double) edition.getCopies() / best.getPagesPerMinute();
-        System.out.printf("Printed %d copies in %.2f minutes on machine %s.%n", edition.getCopies(), minutes, best);
-    */
+        System.out.printf("Printed on %s%n", best);
     }
 
 
-
+    public int getEditionMileage(String title) {
+        return editionMileage.getOrDefault(title, 0);
+    }
 
 
     public void serializeEmployees(String filePath) {
@@ -116,17 +115,36 @@ public class PrintingShop implements Serializable {
     }
 
 
-    public void saveReportToFile(String filePath) {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
-            pw.println("=== Printing Shop Report ===");
-            pw.println("Name      : " + name);
-            pw.printf ("Revenue   : %.2f%n", revenue);
-            pw.printf ("Expenses  : %.2f%n", calculateExpenses());
-            pw.println("\nEmployees (");
-            employees.forEach(e -> pw.printf("  - %s (%s)%n", e.getBaseSalary(), e.getClass().getSimpleName()));
-            pw.println(")\nEditions printed (");
-            editions.forEach(e -> pw.printf("  - %s (%d copies)%n", e.getTitle(), e.getCopies()));
-            pw.println(")");
+    public String buildFullReport() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== Printing Shop Report ===\n");
+        sb.append("Name      : ").append(name).append('\n');
+        sb.append(String.format("Revenue   : %.2f%n", revenue));
+        sb.append(String.format("Expenses  : %.2f%n", calculateExpenses()));
+
+        sb.append("\nEmployees (").append(employees.size()).append(")\n");
+        employees.forEach(e ->
+                sb.append(String.format("  - %s (%s)%n",
+                        e.getBaseSalary(),
+                        e.getClass().getSimpleName()))
+        );
+
+        sb.append("\nEditions printed (").append(editions.size()).append(")\n");
+        editions.forEach(ed ->
+                sb.append(String.format("  - %s (%d copies)%n",
+                        ed.getTitle(),
+                        ed.getCopies()))
+        );
+
+        sb.append("================================\n");
+        return sb.toString();
+    }
+
+    public void saveReportToFile(String filePath, boolean append) {
+        try (PrintWriter pw = new PrintWriter(
+                new FileWriter(filePath, append)))      // ← APPEND flag
+        {
+            pw.print(buildFullReport());
         } catch (IOException e) {
             System.out.println("Error saving report: " + e.getMessage());
         }
@@ -149,7 +167,7 @@ public class PrintingShop implements Serializable {
     public double getRevenue()              { return revenue; }
 
     public double getPriceBase(){
-        return getPriceBase();
+        return priceBase;
     }
     public List<Employee> getEmployees()    { return Collections.unmodifiableList(employees); }
 
@@ -169,6 +187,33 @@ public class PrintingShop implements Serializable {
             System.out.println("Invalid edition index.");
         }
     }
+    public Edition getLatestEdition() {
+        if (editions.isEmpty()) return null;
+        return editions.get(editions.size() - 1);
+    }
+    public void printLatestEdition() {
+        printEdition(getLatestEdition());
+    }
+
+    // Prints a short summary of the newest edition
+    public void showNewestEdition() {
+        Edition e = getLatestEdition();
+        if (e == null) {
+            System.out.println("No editions created yet.");
+            return;
+        }
+        System.out.printf(
+                "Newest edition ➜ %s (%s) – %d copies, %s printing, paper: %s %s, price/pc: %.2f, total: %.2f%n",
+                e.getTitle(),
+                e.getClass().getSimpleName(),
+                e.getCopies(),
+                e.isColor() ? "color" : "b/w",
+                e.getPaper().getType(),
+                e.getPaper().getSize(),
+                e.getPrintPricePerCopy(),
+                e.getPrintPricePerCopy() * e.getCopies()
+        );
+    }
 
     public List<Edition> getAllEditions()   { return Collections.unmodifiableList(editions); }
 
@@ -181,4 +226,7 @@ public class PrintingShop implements Serializable {
     }
 
 
+    public List<PrintingMachine> getAllMachines() {
+        return Collections.unmodifiableList(machines);
+    }
 }
