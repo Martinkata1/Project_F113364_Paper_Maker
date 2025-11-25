@@ -92,7 +92,7 @@ public class Main {
                         System.out.print("Choose shop number: ");
                         selectedShopIndex = scanner.nextInt();
                         selectedShopIndex -= 1;
-                        if (selectedShopIndex < 1 || selectedShopIndex >= houses.size()) {
+                        if (selectedShopIndex < 0 || selectedShopIndex >= houses.size()) {
                             System.out.println("Invalid shop number.");
                             selectedShopIndex = -1;
                         } else {
@@ -122,9 +122,9 @@ public class Main {
                             System.out.println("1. Add employee");
                             System.out.println("2. Add edition");
                             System.out.println("3. Add printing machine");
-                            System.out.println("4. Show in ticket.txt, how is the profit");//TODO
+                            System.out.println("4. Show in ticket.txt, how is the profit");
                             System.out.println("5. Print latest edition");
-                            System.out.println("6. Show revenue and expenses");//TODO
+                            System.out.println("6. Show revenue and expenses");
                             System.out.println("7. Show every machine printer.");
                             System.out.println("8. Print the menu prices of paper types per piece.");
                             System.out.println("9. Select Edition");
@@ -244,7 +244,7 @@ public class Main {
                                                 break;
                                             default:
                                                 System.out.println("Unknown edition type.");
-                                                System.out.printf("TEST4");
+                                                //System.out.printf("TEST4");
                                                 break;
                                         }
 
