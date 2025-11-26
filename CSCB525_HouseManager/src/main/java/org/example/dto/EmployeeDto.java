@@ -1,4 +1,4 @@
 package org.example.dto;
 
-public class Pet {
+public class EmployeeDto {
 }

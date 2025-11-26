@@ -1,4 +1,4 @@
 package org.example.dao;
 
-public class Apartament {
+public class PetDao {
 }

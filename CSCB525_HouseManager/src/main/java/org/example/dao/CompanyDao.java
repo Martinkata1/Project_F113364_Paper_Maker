@@ -1,4 +1,4 @@
 package org.example.dao;
 
-public class Resident {
+public class CompanyDao {
 }
