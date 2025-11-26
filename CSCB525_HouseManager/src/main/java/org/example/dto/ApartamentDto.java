@@ -3,13 +3,13 @@ package org.example.dto;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.NotBlank;
 
 public class ApartamentDto {
-    @NotBlank(message = "Number cannot be blank!")
+    @NotBlank(message = "Number cannot be null blank!")
     private int number;
 
-    @NotBlank(message = "Floors count cannot be blank!")
+    @NotBlank(message = "Floors count cannot be null blank!")
     private int floor;
 
-    @NotBlank(message = "Area cannot be blank!")
+    @NotBlank(message = "Area cannot be null blank!")
     private float area;
 
     public ApartamentDto(int number, int floor, float area) {
