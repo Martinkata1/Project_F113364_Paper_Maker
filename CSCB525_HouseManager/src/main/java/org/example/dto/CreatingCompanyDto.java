@@ -1,18 +1,15 @@
 package org.example.dto;
 
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.NotBlank;
-
 import java.math.BigDecimal;
-public class CompanyDto {
-    @NotBlank(message = "Company name cannot be blank!")
-    private String name;
 
-    @NotBlank(message = "Company income cannot be blank!")
+public class CreatingCompanyDto {
+    private String name;
     private BigDecimal income;
 
-    public CompanyDto(String name) {
+
+    public CreatingCompanyDto(String name) {
         this.name = name;
-        this.income = BigDecimal.ZERO;
+        this.income = BigDecimal.valueOf(0.0);
     }
 
     public String getName() {
@@ -29,5 +26,13 @@ public class CompanyDto {
 
     public void setIncome(BigDecimal income) {
         this.income = income;
+    }
+
+    @Override
+    public String toString() {
+        return "CreateCompanyDto{" +
+                "name='" + name + '\'' +
+                ", income=" + income +
+                '}';
     }
 }
